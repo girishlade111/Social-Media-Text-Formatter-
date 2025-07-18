@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Formatter Pro | WhatsApp & Social Media</title>
+    <style>
+        :root {
+            --primary: #25D366;
+            --dark-bg: #1e1e1e;
+            --light-bg: #f5f5f5;
+            --card-bg: #ffffff;
+            --text: #333333;
+            --text-light: #666666;
+        }
+
+        [data-theme="dark"] {
+            --primary: #128C7E;
+            --dark-bg: #121212;
+            --light-bg: #1e1e1e;
+            --card-bg: #252525;
+            --text: #f0f0f0;
+            --text-light: #aaaaaa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .input-section {
+            margin-bottom: 2rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            font-size: 1rem;
+            resize: vertical;
+            background-color: var(--card-bg);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .formats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .format-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .format-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .format-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .format-content {
+            min-height: 100px;
+            margin-bottom: 1rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .copy-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: opacity 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            opacity: 0.9;
+        }
+
+        .copied {
+            background-color: #4CAF50;
+        }
+
+        @media (max-width: 768px) {
+            .formats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Text Formatter Pro</h1>
+            <button class="theme-toggle" id="themeToggle">🌓</button>
+        </header>
+
+        <section class="input-section">
+            <textarea id="inputText" placeholder="Type your message here..."></textarea>
+        </section>
+
+        <section class="formats-grid" id="formatsContainer">
+            <!-- Format cards will be generated here -->
+        </section>
+    </div>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.setAttribute('data-theme', 
+                document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+
+        // Format templates
+        const formatTemplates = [
+            {
+                title: "Bold Text",
+                description: "Makes text bold on WhatsApp and most platforms",
+                transform: text => `*${text}*`
+            },
+            {
+                title: "Italic Text",
+                description: "Makes text italic on WhatsApp and most platforms",
+                transform: text => `_${text}_`
+            },
+            {
+                title: "Strikethrough",
+                description: "Adds strikethrough formatting",
+                transform: text => `~${text}~`
+            },
+            {
+                title: "Monospace",
+                description: "Formats as monospace/code block",
+                transform: text => "```\n" + text + "\n```"
+            },
+            {
+                title: "Capitalized",
+                description: "CAPITALIZES ALL LETTERS",
+                transform: text => text.toUpperCase()
+            },
+            {
+                title: "Small Caps",
+                description: "ʟᴏᴡᴇʀᴄᴀsᴇ ʙᴜᴛ ᴡɪᴛʜ sᴍᴀʟʟ ᴄᴀᴘs",
+                transform: text => {
+                    const smallCapsMap = {
+                        'a': 'ᴀ', 'b': 'ʙ', 'c': 'ᴄ', 'd': 'ᴅ', 'e': 'ᴇ',
+                        'f': 'ғ', 'g': 'ɢ', 'h': 'ʜ', 'i': 'ɪ', 'j': 'ᴊ',
+                        'k': 'ᴋ', 'l': 'ʟ', 'm': 'ᴍ', 'n': 'ɴ', 'o': 'ᴏ',
+                        'p': 'ᴘ', 'q': 'ǫ', 'r': 'ʀ', 's': 's', 't': 'ᴛ',
+                        'u': 'ᴜ', 'v': 'ᴠ', 'w': 'ᴡ', 'x': 'x', 'y': 'ʏ',
+                        'z': 'ᴢ'
+                    };
+                    return text.toLowerCase().split('').map(c => smallCapsMap[c] || c).join('');
+                }
+            },
+            {
+                title: "Reverse Text",
+                description: "Reverses the text order",
+                transform: text => text.split('').reverse().join('')
+            },
+            {
+                title: "Alternating Case",
+                description: "AlTeRnAtEs BeTwEeN uPpEr & lOwEr CaSe",
+                transform: text => text.split('').map((c,i) => i%2 ? c.toLowerCase() : c.toUpperCase()).join('')
+            }
+        ];
+
+        // DOM elements
+        const inputText = document.getElementById('inputText');
+        const formatsContainer = document.getElementById('formatsContainer');
+
+        // Generate format cards
+        function generateFormatCards() {
+            formatsContainer.innerHTML = '';
+            const text = inputText.value.trim();
+            
+            if (!text) {
+                formatsContainer.innerHTML = '<p>Type something to see formatted versions</p>';
+                return;
+            }
+
+            formatTemplates.forEach(format => {
+                const card = document.createElement('div');
+                card.className = 'format-card';
+                
+                const transformedText = format.transform(text);
+                
+                card.innerHTML = `
+                    <div class="format-title">
+                        <span>${format.title}</span>
+                        <button class="copy-btn" data-text="${encodeURIComponent(transformedText)}">Copy</button>
+                    </div>
+                    <div class="format-content">${transformedText}</div>
+                    <small>${format.description}</small>
+                `;
+                
+                formatsContainer.appendChild(card);
+            });
+
+            // Add copy functionality
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const textToCopy = decodeURIComponent(this.getAttribute('data-text'));
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        this.textContent = 'Copied!';
+                        this.classList.add('copied');
+                        setTimeout(() => {
+                            this.textContent = 'Copy';
+                            this.classList.remove('copied');
+                        }, 2000);
+                    });
+                });
+            });
+        }
+
+        // Event listeners
+        inputText.addEventListener('input', generateFormatCards);
+
+        // Initialize
+        generateFormatCards();
+    </script>
+</body>
+</html>
